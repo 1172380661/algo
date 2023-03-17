@@ -1,4 +1,5 @@
 import basic.ListNode;
+import basic.TreeNode;
 
 import java.util.*;
 
@@ -114,31 +115,43 @@ public class day01 {
 
     }
 
+    /**
+     * 公式f(x) = f(x-1) + f(x-2)
+     * 同时可以使用滑动窗口避免重复计算
+     *
+     * @param n
+     * @return
+     */
     public int climbStairs(int n) {
-        int ii = 0, j = 1, k = 0;
-        for (int i = 1; i <= n; i++) {
-            k = ii + j;
-            ii = j;
+        int i = 0, j = 1, k = 0;
+        for (int m = 1; m <= n; m++) {
+            k = i + j;
+            i = j;
             j = k;
         }
         return k;
     }
 
+    /**
+     * 遍历一次，当发现不同的值时才改变指针
+     *
+     * @param head
+     * @return
+     */
     public ListNode deleteDuplicates(ListNode head) {
         if (head == null) {
-            return null;
+            return head;
         }
-        ListNode idx = head.next;
-        ListNode temp = head;
-        while (idx != null) {
-            if (idx.val == temp.val) {
-                idx = idx.next;
-            } else {
-                temp.next = idx;
-                temp = temp.next;
+        ListNode p1 = head;
+        ListNode p2 = head.next;
+        while (p2 != null) {
+            if (p1.val != p2.val) {
+                p1.next = p2;
+                p1 = p2;
             }
+            p2 = p2.next;
         }
-        temp.next = null;
+        p1.next = null;
         return head;
     }
 
@@ -159,9 +172,7 @@ public class day01 {
                 p1++;
             }
         }
-        for (int i = 0; i < m + n; i++) {
-            nums1[i] = ints[i];
-        }
+        if (m + n >= 0) System.arraycopy(ints, 0, nums1, 0, m + n);
     }
 
     //可以从大到小比较
@@ -181,6 +192,12 @@ public class day01 {
         }
     }
 
+    /**
+     * 给点待特殊符号的str，判断不包含特殊符号的str是否是回文
+     *
+     * @param s
+     * @return
+     */
     public static boolean isPalindrome(String s) {
         StringBuffer sgood = new StringBuffer();
         for (int i = 0; i < s.length(); i++) {
@@ -282,6 +299,7 @@ public class day01 {
 
     /**
      * 回文问题：如果是数字可以转成字符串，如果是链表可以转成数组。之后使用双指针解决。时间复杂度和空间复杂度都是o(n)
+     *
      * @param head
      * @return boolean
      **/
@@ -303,6 +321,86 @@ public class day01 {
             }
         }
         return true;
+    }
+
+    /**
+     * 双指针反转链表 时间复杂度o(n) 空间复杂度o(1)
+     *
+     * @param head
+     * @return
+     */
+    public ListNode reverseList(ListNode head) {
+        ListNode i1 = null;
+        ListNode i2 = head;
+        while (i2 != null) {
+            i2 = head.next;
+            head.next = i1;
+            i1 = head;
+            head = i2;
+        }
+        return i1;
+    }
+
+
+    /**
+     * 中序遍历树
+     * 递归
+     *
+     * @param root 根
+     * @return {@link List}<{@link Integer}>
+     */
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        add(root, result);
+        return result;
+    }
+
+    private void add(TreeNode root, List<Integer> result) {
+        if (root == null) {
+            return;
+        }
+        add(root.left, result);
+        result.add(root.val);
+        add(root.right, result);
+    }
+
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        if (p == null && q == null) {
+            return true;
+        } else if (p == null || q == null) {
+            return false;
+        } else {
+            if (p.val == q.val) {
+                boolean sameTree = isSameTree(p.left, q.left);
+                if (sameTree) {
+                    return isSameTree(p.right, q.right);
+                }
+                return false;
+            }
+            return false;
+        }
+    }
+
+
+    /**
+     * 递归判断左右子树是否相等
+     *
+     * @param root 根
+     * @return boolean
+     */
+    public boolean isSymmetric(TreeNode root) {
+        if (root.left == null && root.right == null) {
+            return true;
+        } else if (root.left == null || root.right == null) {
+            return false;
+        }else {
+            if (root.left.val == root.right.val){
+                if (isSymmetric(root.left)){
+                    return isSymmetric(root.right);
+                }
+            }
+        }
+        return false;
     }
 
 
